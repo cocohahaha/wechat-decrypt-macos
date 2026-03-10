@@ -1,8 +1,23 @@
 # wechat-decrypt-macos
 
-macOS 上解密和分析微信聊天记录的命令行工具。
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)](https://github.com/cocohahaha/wechat-decrypt-macos)
 
-## 原理
+> 微信 macOS 聊天记录解密、备份与分析工具 — 通过进程内存提取 SQLCipher 密钥，解密本地数据库
+
+**关键词**: 微信解密 / WeChat Decrypt / 聊天记录备份 / 聊天记录导出 / macOS / SQLCipher / 密钥提取 / 内存取证 / 微信数据库 / WCDB
+
+## 功能特性
+
+- 🔑 从微信进程内存自动提取 SQLCipher 加密密钥
+- 🔓 解密并查询微信本地聊天数据库 (message_*.db)
+- 📊 聊天内容分析 — 消息类型、活跃度、时间分布、情感倾向、高频词
+- 📤 导出聊天记录为 JSON / CSV
+- 🖥️ 支持 Apple Silicon (M1/M2/M3/M4) 和 Intel Mac
+- 🐍 提供 CLI 命令行工具和 Python API 两种使用方式
+
+## 工作原理
 
 微信 macOS 版使用 SQLCipher 加密本地聊天数据库。本工具通过以下步骤实现解密：
 
@@ -116,6 +131,19 @@ db.export_messages("output.json", days=30, fmt="json")
 
 **Q: 密钥提取后可以正常使用微信吗？**
 可以。密钥提取只是读取内存，不会修改微信运行状态。
+
+## 兼容性
+
+| 项目 | 支持 |
+|------|------|
+| macOS 版本 | Ventura 13+ / Sonoma 14+ / Sequoia 15+ |
+| 芯片架构 | Apple Silicon (M1/M2/M3/M4) / Intel |
+| 微信版本 | macOS 微信 (新版 WCDB 格式) |
+| Python | 3.9+ |
+
+## Star History
+
+如果觉得有用，请给个 Star ⭐ 让更多人看到！
 
 ## 免责声明
 
