@@ -1,20 +1,12 @@
-[build-system]
-requires = ["setuptools>=68.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "wechat-decrypt-macos"
+name = "wechat-mcp-server"
 version = "0.1.0"
-description = "Decrypt and analyze your own WeChat chat databases on macOS"
-readme = "README.md"
-license = {text = "MIT"}
-requires-python = ">=3.9"
-classifiers = [
-    "Operating System :: MacOS",
-    "Programming Language :: Python :: 3",
-    "Topic :: Security :: Cryptography",
-    "Topic :: Communications :: Chat",
+description = "MCP server for reading and analyzing WeChat chat history on macOS"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.0.0",
 ]
 
-[project.scripts]
-wechat-decrypt = "wechat_decrypt.cli:main"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
