@@ -30,10 +30,22 @@
 
 ## 安装
 
+### 一键安装（推荐）
+
 ```bash
 git clone https://github.com/cocohahaha/wechat-decrypt-macos.git
 cd wechat-decrypt-macos
-python -m venv .venv
+bash install.sh
+```
+
+脚本会自动：检查依赖 → 创建虚拟环境 → 安装包 → 注册 MCP Server 到 Claude Code。
+
+### 手动安装
+
+```bash
+git clone https://github.com/cocohahaha/wechat-decrypt-macos.git
+cd wechat-decrypt-macos
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 ```
@@ -44,26 +56,58 @@ pip install -e .
 
 ```bash
 # 1. 重签名微信（移除 Hardened Runtime，首次使用/微信更新后需要）
-sudo python -c "from server import *; print('请参考 wechat-decrypt-macos 旧版文档进行重签名')"
+# 先退出微信，然后：
+sudo codesign --force --deep --sign - --entitlements entitlements.plist /Applications/WeChat.app
+# 重新启动微信并登录
 
-# 2. 提取密钥并保存
-# 密钥会自动保存到 key.txt
+# 2. 提取密钥并保存到 key.txt
+# 密钥提取需要微信正在运行
 ```
 
 ## 配置 Claude Code
 
-在 `~/.claude/settings.json` 中添加：
+**推荐方式** — 使用 `claude mcp add` 命令（user scope，所有项目通用）：
+
+```bash
+claude mcp add -s user wechat /path/to/wechat-decrypt-macos/.venv/bin/python /path/to/wechat-decrypt-macos/server.py
+```
+
+例如：
+
+```bash
+claude mcp add -s user wechat ~/wechat-decrypt-macos/.venv/bin/python ~/wechat-decrypt-macos/server.py
+```
+
+> 如果使用了 `bash install.sh` 安装，脚本会自动完成注册。
+
+<details>
+<summary>手动方式 — 编辑 ~/.claude.json</summary>
+
+在 `~/.claude.json` 的 `mcpServers` 中添加：
 
 ```json
 {
   "mcpServers": {
     "wechat": {
+      "type": "stdio",
       "command": "/path/to/wechat-decrypt-macos/.venv/bin/python",
       "args": ["/path/to/wechat-decrypt-macos/server.py"]
     }
   }
 }
 ```
+
+</details>
+
+### MCP 工具列表
+
+| 工具 | 说明 |
+|------|------|
+| `wechat_list_chats` | 列出所有聊天对话 |
+| `wechat_read_chat` | 读取与指定联系人的聊天记录 |
+| `wechat_search_messages` | 按关键词搜索消息 |
+| `wechat_recent_messages` | 获取最近消息概览 |
+| `wechat_chat_summary` | 生成结构化摘要，提取待办和行动项 |
 
 ## 使用方式
 

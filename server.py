@@ -12,7 +12,7 @@ from datetime import datetime
 from mcp.server.fastmcp import FastMCP
 
 # --- Configuration ---
-KEY_FILE = os.path.join(os.path.dirname(__file__), "..", "wechat-decrypt-macos", "key.txt")
+KEY_FILE = os.path.join(os.path.dirname(__file__), "key.txt")
 SQLCIPHER_PATH = "/opt/homebrew/bin/sqlcipher"
 
 mcp = FastMCP(
