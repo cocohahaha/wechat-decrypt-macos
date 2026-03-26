@@ -52,16 +52,42 @@ pip install -e .
 
 ## 提取密钥（首次使用）
 
-微信使用 SQLCipher 加密本地数据库。需要先提取密钥：
+微信使用 SQLCipher 加密本地数据库。需要先提取 32 字节十六进制密钥，保存到项目根目录的 `key.txt` 文件中。
+
+### 方法一：重签名 + 内存提取（推荐）
 
 ```bash
-# 1. 重签名微信（移除 Hardened Runtime，首次使用/微信更新后需要）
-# 先退出微信，然后：
-sudo codesign --force --deep --sign - --entitlements entitlements.plist /Applications/WeChat.app
-# 重新启动微信并登录
+# 1. 退出微信
 
-# 2. 提取密钥并保存到 key.txt
-# 密钥提取需要微信正在运行
+# 2. 重签名微信（移除 Hardened Runtime，首次使用/微信更新后需要）
+sudo codesign --force --deep --sign - /Applications/WeChat.app
+
+# 3. 重新启动微信并登录
+
+# 4. 用 lldb 从进程内存中提取密钥
+#    原理：WeChat 的 SQLCipher 派生密钥存储在进程内存中，
+#    通过搜索数据库文件的 salt（前 16 字节）定位 codec_ctx 结构体，
+#    从中提取 32 字节的派生密钥。
+#
+#    你可以使用任何能读取进程内存的工具来完成这一步。
+#    提取到的密钥是 64 个十六进制字符（32 字节），格式如：
+#    abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
+
+# 5. 将密钥保存到 key.txt
+echo "你提取到的64位hex密钥" > key.txt
+```
+
+### 方法二：借助第三方工具
+
+社区中有多种微信密钥提取工具可用，例如搜索「微信 macOS SQLCipher 密钥提取」。提取到密钥后，保存到项目根目录的 `key.txt` 即可。
+
+### 验证密钥
+
+```bash
+# 将下面的 KEY 替换为你的实际密钥
+sqlcipher ~/Library/Containers/com.tencent.xinWeChat/Data/Documents/xwechat_files/*/db_storage/message/message_0.db \
+  "PRAGMA key = \"x'你的密钥'\"; PRAGMA cipher_compatibility = 4; PRAGMA cipher_page_size = 4096; SELECT count(*) FROM sqlite_master;"
+# 如果输出数字（如 5），说明密钥正确
 ```
 
 ## 配置 Claude Code
@@ -123,6 +149,17 @@ Claude：(搜索并返回相关消息)
 你：分析一下我最活跃的 5 个聊天对话
 Claude：(查询数据库，返回统计分析)
 ```
+
+## 联系人昵称（可选）
+
+MCP 工具默认使用微信 ID 显示联系人。如果你希望显示昵称/备注名，可以创建 `contacts.json`：
+
+```bash
+cp contacts.example.json contacts.json
+# 编辑 contacts.json，填入你的联系人信息
+```
+
+格式参考 `contacts.example.json`。该文件已在 `.gitignore` 中，不会被提交。
 
 ## 技术细节
 

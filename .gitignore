@@ -1,6 +1,9 @@
 .venv/
 __pycache__/
 *.pyc
+*.egg-info/
 key.txt
+contacts.json
 .env
 *.db
+.DS_Store
